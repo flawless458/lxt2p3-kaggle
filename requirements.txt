@@ -8,3 +8,4 @@ flask
 pyngrok
 requests
 numpy
+gguf>=0.10.0
