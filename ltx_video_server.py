@@ -8,7 +8,7 @@ Usage on Kaggle:
 4. The generated video is streamed back and saved locally on your machine, NOT on Kaggle
 
 Install dependencies first:
-    pip install diffusers transformers accelerate torch huggingface_hub flask pyngrok
+    pip install -r requirements.txt
 """
 
 import os

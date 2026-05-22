@@ -1,0 +1,10 @@
+av
+diffusers
+transformers
+accelerate
+torch
+huggingface_hub
+flask
+pyngrok
+requests
+numpy

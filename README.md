@@ -11,6 +11,7 @@ This project sets up an OpenAI-compatible HTTP server on **Kaggle** using a **T4
 | `ltx_video_server.py` | Flask server that loads the LTX-2.3 GGUF model and exposes `/v1/video/generations` |
 | `local_client.py` | Run this on your **local machine** to send requests and save the video file |
 | `kaggle_install.sh` | Dependency installation script for Kaggle notebooks |
+| `requirements.txt` | Python dependencies (av, diffusers, transformers, etc.) |
 | `README.md` | This file |
 
 ---
@@ -43,7 +44,7 @@ Create a new Kaggle Notebook with **GPU T4x2** enabled.
 Or manually:
 
 ```bash
-!pip install -q diffusers transformers accelerate huggingface_hub flask pyngrok
+!pip install -q -r requirements.txt
 ```
 
 #### Set your ngrok auth token (optional but recommended for stable URLs):
@@ -85,7 +86,7 @@ Download `local_client.py` to your local machine (or copy-paste it).
 #### Requirements:
 
 ```bash
-pip install requests
+pip install -r requirements.txt
 ```
 
 #### Generate a video:
