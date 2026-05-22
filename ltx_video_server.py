@@ -27,7 +27,7 @@ from flask.typing import ResponseReturnValue
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-MODEL_ID = "Lightricks/LTX-2"  # Base config repo
+MODEL_ID = "Lightricks/LTX-2.3"  # Base config repo for LTX-2.3
 # Unsloth GGUF Q4_K_M checkpoint
 GGUF_CKPT = "https://huggingface.co/unsloth/LTX-2.3-GGUF/blob/main/ltx-2.3-22b-dev-Q4_K_M.gguf"
 
@@ -65,39 +65,49 @@ def load_pipeline() -> LTX2Pipeline:
     if _pipe is not None:
         return _pipe
 
-    print("[LOAD] Downloading / loading LTX-2.3 Q4_K_M GGUF transformer...")
+    print("[LOAD] Step 1/5: Preparing dtype and quantization config...")
     dtype = getattr(torch, DTYPE)
 
     transformer_kwargs = {}
     _, ext = os.path.splitext(GGUF_CKPT)
     if ext == ".gguf":
         transformer_kwargs["quantization_config"] = GGUFQuantizationConfig(compute_dtype=dtype)
+        print("[LOAD]   Quantization config: GGUF with compute_dtype=bfloat16")
 
+    print("[LOAD] Step 2/5: Downloading LTX-2.3 Q4_K_M GGUF transformer (14.3 GB)...")
+    print("[LOAD]   This may take a few minutes depending on connection speed.")
+
+    print("[LOAD] Step 3/5: Loading transformer from_single_file with version=2.3...")
     transformer = LTX2VideoTransformer3DModel.from_single_file(
         GGUF_CKPT,
         config=MODEL_ID,
         subfolder="transformer",
         torch_dtype=dtype,
+        single_file_version="2.3",
         **transformer_kwargs,
     )
+    print("[LOAD]   Transformer loaded successfully.")
 
-    print("[LOAD] Building LTX2Pipeline from pretrained config...")
+    print("[LOAD] Step 4/5: Building LTX2Pipeline from_pretrained...")
     pipe = LTX2Pipeline.from_pretrained(
         MODEL_ID,
         transformer=transformer,
         torch_dtype=dtype,
     )
+    print("[LOAD]   Pipeline built successfully.")
 
-    # Memory optimization for Kaggle T4 (16 GB VRAM)
+    print("[LOAD] Step 5/5: Applying memory optimizations for T4x2...")
     pipe.enable_model_cpu_offload(device=DEVICE)
-    # Optional: enable VAE slicing / tiling if available
+    print("[LOAD]   CPU offload enabled.")
     if hasattr(pipe, "vae") and hasattr(pipe.vae, "enable_slicing"):
         pipe.vae.enable_slicing()
+        print("[LOAD]   VAE slicing enabled.")
     if hasattr(pipe, "vae") and hasattr(pipe.vae, "enable_tiling"):
         pipe.vae.enable_tiling()
+        print("[LOAD]   VAE tiling enabled.")
 
     _pipe = pipe
-    print("[LOAD] Pipeline ready.")
+    print("[LOAD] Pipeline ready! All steps complete.")
     return _pipe
 
 
