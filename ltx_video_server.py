@@ -27,7 +27,7 @@ from flask.typing import ResponseReturnValue
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-MODEL_ID = "Lightricks/LTX-2.3"  # Base config repo for LTX-2.3
+MODEL_ID = "dg845/LTX-2.3-Diffusers"  # Diffusers-compatible config repo (Lightricks/LTX-2.3 lacks model_index.json)
 # Unsloth GGUF Q4_K_M checkpoint
 GGUF_CKPT = "https://huggingface.co/unsloth/LTX-2.3-GGUF/blob/main/ltx-2.3-22b-dev-Q4_K_M.gguf"
 
