@@ -78,7 +78,8 @@ def load_pipeline() -> LTX2Pipeline:
     print("[LOAD]   This may take a few minutes depending on connection speed.")
 
     print("[LOAD] Step 3/5: Loading transformer from_single_file with version=2.3...")
-    # Load transformer on CPU first (GGUF + device_map can create meta tensors).
+    # Load transformer on CPU first (GGUF + low_cpu_mem_usage creates meta tensors
+    # that can't be moved; disable it so weights load normally into CPU memory).
     # Pipeline's enable_model_cpu_offload() will handle GPU placement later.
     transformer = LTX2VideoTransformer3DModel.from_single_file(
         GGUF_CKPT,
@@ -86,7 +87,7 @@ def load_pipeline() -> LTX2Pipeline:
         subfolder="transformer",
         torch_dtype=dtype,
         single_file_version="2.3",
-        device_map=None,
+        low_cpu_mem_usage=False,
         **transformer_kwargs,
     )
     print("[LOAD]   Transformer loaded successfully.")
